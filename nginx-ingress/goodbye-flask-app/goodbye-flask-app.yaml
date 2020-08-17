@@ -1,0 +1,37 @@
+# About:
+#   - Simple Flask App: Deployment and Service
+# Author:
+#   - Matthew Feng
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goodbye-everyone
+  labels:
+    app: goodbye-everyone
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goodbye-everyone
+  template:
+    metadata:
+      labels:
+        app: goodbye-everyone
+    spec:
+      containers:
+      - name: goodbye-everyone
+        image: mattfeng/goodbye-flask-app
+        ports:
+        - containerPort: 5000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: goodbye-everyone
+spec:
+  selector:
+    app: goodbye-everyone
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetPort: 5000
