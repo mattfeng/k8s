@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-manual
+spec:
+  containers:
+    - image: mattfeng/kubia:0.1.0
+      name: kubia
+      ports:
+        - containerPort: 8080   # the port the app is listening on
+          protocol: TCP

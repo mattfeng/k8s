@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - image: nginx:1.15.3-alpine
+          name: nginx
+          ports:
+            - name: http
+              containerPort: 80
+              hostPort: 80
+          volumeMounts:
+            - name: "config"
+              mountPath: "/etc/nginx"
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-conf
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  nginx.conf: |
+    worker_processes 1;
+    error_log /dev/stdout info;
+
+    events {
+      worker_connections 10;
+    }
+
+    http {
+      server {
+        server_name hello.dev-cluster.mattfeng.trade;
+        listen 80;
+
+        location / {
+          proxy_pass http://hello-world.default.svc.cluster.local:5000;
+        }
+      }
+
+      server {
+        server_name goodbye.dev-cluster.mattfeng.trade;
+        listen 80;
+
+        location / {
+          proxy_pass http://goodbye-everyone.default.svc.cluster.local:5001;
+        }
+      }
+
+      server {
+        server_name jobs-client.dev-cluster.mattfeng.trade;
+        listen 80;
+
+        location / {
+          proxy_pass http://jobs-client.default.svc.cluster.local:8080;
+        }
+      }
+
+      server {
+        server_name jobs-server.dev-cluster.mattfeng.trade;
+        listen 80;
+
+        location / {
+          proxy_pass http://job-scheduler-api.default.svc.cluster.local:10000;
+        }
+      }
+    }
+
+
