@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gitrepo-volume-pod
+spec:
+  containers:
+    - image: "nginx:alpine"
+      name: web-server
+      volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx
+          readOnly: true
+      ports:
+        - containerPort: 80
+          protocol: TCP
+    - image: "k8s.gcr.io/git-sync:v3.1.6"
+      name: gitsync-sidecar
+      env:
+        - name: GIT_SYNC_REPO
+          value: https://github.com/thedevelopingdev/gitsync-website-example.git
+        - name: GIT_SYNC_ROOT
+          value: /git
+        - name: GIT_SYNC_DEST
+          value: "html"
+        - name: GIT_SYNC_BRANCH
+          value: master
+        - name: GIT_SYNC_WAIT
+          value: "10"
+        - name: GIT_SYNC_REV
+          value: "HEAD"
+      volumeMounts:
+        - name: html
+          mountPath: /git
+  volumes:
+    - name: html
+      emptyDir: {}
