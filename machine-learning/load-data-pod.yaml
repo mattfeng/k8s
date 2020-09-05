@@ -12,7 +12,7 @@ spec:
         - mountPath: /data
           name: data-disk
   nodeSelector:
-    node_class: compute
+    node_class: prepare
   volumes:
     - name: data-disk
       gcePersistentDisk:

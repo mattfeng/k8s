@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compute-pod
+spec:
+  nodeSelector:
+    node_class: compute
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Equal
+      value: present
+      effect: NoSchedule
+  containers:
+    - name: compute
+      image: nvidia/cuda:11.0-cudnn8-devel-ubuntu18.04
+      command: ["sleep"]
+      args: ["infinity"]
+      volumeMounts:
+        - name: data-disk
+          mountPath: /data
+          readOnly: true
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+  volumes:
+    - name: data-disk
+      gcePersistentDisk:
+        pdName: deep-learning
+        fsType: ext4
+
