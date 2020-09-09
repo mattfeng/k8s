@@ -1,0 +1,3 @@
+- What are the four components of the Kubernetes `Control Plane`?
+- What are the three components that run on each Kubernetes worker node?
+- How does the DNS server addon work?
